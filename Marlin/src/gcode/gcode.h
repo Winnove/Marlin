@@ -290,6 +290,15 @@
  * "T" Codes
  *
  * T0-T3 - Select an extruder (tool) by index: "T<n> F<units/min>"
+ *
+ ****************************************
+ ******* Custom Robobend RCode **********
+ ****************************************
+ *
+ * Sont déclaré ici les Mcode customisés pour le fonctionnement du RoboBend
+ *
+ * M5000 - Permet de lancer un chargement du fil jusqu'a détection du par conduction du endstop associé a l'axe Y
+ *
  */
 
 #include "../inc/MarlinConfig.h"
@@ -884,6 +893,10 @@ private:
   TERN_(MAX7219_GCODE, static void M7219());
 
   TERN_(CONTROLLER_FAN_EDITABLE, static void M710());
+
+  #if ENABLED(ENABLE_CUSTOM_GCODE)
+    static void M5000();
+  #endif
 
   static void T(const int8_t tool_index);
 
