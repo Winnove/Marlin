@@ -38,6 +38,18 @@
 
 void GcodeSuite::M5000()
 {
+SERIAL_ECHO_MSG("Preparation machine");
+
+//met la machine en position pour ouvrir l'extrudeur
+
+destination[X_AXIS] = 20;
+prepare_internal_move_to_destination();         // set_current_to_destination
+planner.synchronize();
+
+SERIAL_ECHO_MSG("Insérer fil");
+
+//lance la detection du fil en butée lors de l'insertion par l'utilisateur
+
 while ((digitalRead(P1_25) == HIGH))      //using pin P1_25 for endstop
 {
   destination[E_AXIS] += 0.05;
@@ -45,5 +57,38 @@ while ((digitalRead(P1_25) == HIGH))      //using pin P1_25 for endstop
   planner.synchronize();
   reset_stepper_timeout();
 }
+SERIAL_ECHO_MSG("Fil detecté");
+
+//ferme l'extudeur
+
+destination[X_AXIS] = 0;
+prepare_internal_move_to_destination();         // set_current_to_destination
+planner.synchronize();
+
+//recule le fil pour repalper précisement la butée sans perturbation de l'utilisateur
+
+destination[E_AXIS] -= 2;
+prepare_internal_move_to_destination();         // set_current_to_destination
+planner.synchronize();
+reset_stepper_timeout();
+
+//repalpe le fil
+
+while ((digitalRead(P1_25) == HIGH))      //using pin P1_25 for endstop
+{
+  destination[E_AXIS] += 0.05;
+  prepare_internal_move_to_destination();         // set_current_to_destination
+  planner.synchronize();
+  reset_stepper_timeout();
+}
+
+//met le fil a ras de la buse
+
+destination[E_AXIS] -= 1.00;
+prepare_internal_move_to_destination();         // set_current_to_destination
+planner.synchronize();
+reset_stepper_timeout();
+
 SERIAL_ECHO_MSG("Fil en position");
+
 }
