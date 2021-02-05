@@ -23,82 +23,85 @@
  *
  */
 
- #include "../../inc/MarlinConfig.h"
- #include "../gcode.h"
+#include "../../inc/MarlinConfig.h"
+#include "../gcode.h"
 
- #include "../../module/stepper.h"
- #include "../../module/endstops.h"
- #include "../../core/macros.h"
- #include "../../../feature/leds/leds.h"
+#include "../../../feature/leds/leds.h"
+#include "../../../feature/leds/FxLed.hpp"
+#include "../../core/macros.h"
+#include "../../module/endstops.h"
+#include "../../module/stepper.h"
 
 /**
-*
-* M5000 : Fonction de chargement du fil du Robobend
-*
-*/
+ *
+ * M5000 : Fonction de chargement du fil du Robobend
+ *
+ */
 
-void GcodeSuite::M5000()
-{
+void GcodeSuite::M5000() {
 
-leds.set_color(255,40,40,255);
+  leds.set_color(255, 40, 40, 255);
 
-SERIAL_ECHO_MSG("Preparation machine");
+  SERIAL_ECHO_MSG("Preparation machine");
 
-//met la machine en position pour ouvrir l'extrudeur
+  // met la machine en position pour ouvrir l'extrudeur
 
-destination[X_AXIS] = 20;
-prepare_internal_move_to_destination();         // set_current_to_destination
-planner.synchronize();
+  destination[X_AXIS] = 20;
+  prepare_internal_move_to_destination(); // set_current_to_destination
+  planner.synchronize();
 
-leds.set_color(0,128,255,255);
+  LedFx ledfx;
+  ledfx.begin(LedFx::Pattern::Blink,500,LEDColor(0,40,255));
 
-SERIAL_ECHO_MSG("Inserer fil");
+  SERIAL_ECHO_MSG("Inserer fil");
 
-//lance la detection du fil en butée lors de l'insertion par l'utilisateur
+  // lance la detection du fil en butée lors de l'insertion par l'utilisateur
 
-while ((digitalRead(P1_28) == HIGH))      //using pin P1_25 for endstop
-{
-  destination[E_AXIS] += 0.05;
-  prepare_internal_move_to_destination();         // set_current_to_destination
+  while ((digitalRead(P1_28) == HIGH)) // using pin P1_28 for endstop
+  {
+    ledfx.update();
+    destination[E_AXIS] += 0.05;
+    prepare_internal_move_to_destination(); // set_current_to_destination
+    planner.synchronize();
+    reset_stepper_timeout();
+  }
+  ledfx.stop();
+  SERIAL_ECHO_MSG("Fil detecte... mise en position");
+
+  leds.set_color(100, 255, 0, 255);
+
+  // ferme l'extudeur
+
+  destination[X_AXIS] = 0;
+  prepare_internal_move_to_destination(); // set_current_to_destination
+  planner.synchronize();
+
+  // recule le fil pour repalper précisement la butée sans perturbation de
+  // l'utilisateur
+
+  destination[E_AXIS] -= 2;
+  prepare_internal_move_to_destination(); // set_current_to_destination
   planner.synchronize();
   reset_stepper_timeout();
-}
-SERIAL_ECHO_MSG("Fil detecte... mise en position");
 
-leds.set_color(100,255,0,255);
+  // repalpe le fil
 
-//ferme l'extudeur
+  while ((digitalRead(P1_28) == HIGH)) // using pin P1_28 for endstop
+  {
+    destination[E_AXIS] += 0.05;
+    prepare_internal_move_to_destination(); // set_current_to_destination
+    planner.synchronize();
+    reset_stepper_timeout();
+  }
 
-destination[X_AXIS] = 0;
-prepare_internal_move_to_destination();         // set_current_to_destination
-planner.synchronize();
+  // met le fil a ras de la buse
 
-//recule le fil pour repalper précisement la butée sans perturbation de l'utilisateur
-
-destination[E_AXIS] -= 2;
-prepare_internal_move_to_destination();         // set_current_to_destination
-planner.synchronize();
-reset_stepper_timeout();
-
-//repalpe le fil
-
-while ((digitalRead(P1_28) == HIGH))      //using pin P1_25 for endstop
-{
-  destination[E_AXIS] += 0.05;
-  prepare_internal_move_to_destination();         // set_current_to_destination
+  destination[E_AXIS] -= 1.00;
+  prepare_internal_move_to_destination(); // set_current_to_destination
   planner.synchronize();
   reset_stepper_timeout();
-}
 
-//met le fil a ras de la buse
+  SERIAL_ECHO_MSG("Fil en position");
 
-destination[E_AXIS] -= 1.00;
-prepare_internal_move_to_destination();         // set_current_to_destination
-planner.synchronize();
-reset_stepper_timeout();
-
-SERIAL_ECHO_MSG("Fil en position");
-
-leds.set_color(0,255,0,255);
-
+  leds.set_color(0, 255, 0, 255);
 }

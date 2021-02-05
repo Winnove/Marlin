@@ -898,6 +898,10 @@ private:
     static void M5000();
   #endif
 
+  #if ENABLED(ENABLE_CUSTOM_GCODE)
+    static void M5001();
+  #endif
+
   static void T(const int8_t tool_index);
 
 };

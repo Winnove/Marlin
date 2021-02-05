@@ -918,6 +918,10 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 5000: M5000(); break;                               //  M5000 : Permet de charger le fil du robobend jusqu'a détection du endstop Y
       #endif
 
+      #if ENABLED(ENABLE_CUSTOM_GCODE)
+        case 5001: M5001(); break;                               //  M5001 : Permet de lancer des animations LED
+      #endif
+
       #if ENABLED(SDSUPPORT)
         case 1001: M1001(); break;                                // M1001: [INTERNAL] Handle SD completion
       #endif
