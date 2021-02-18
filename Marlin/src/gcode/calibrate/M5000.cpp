@@ -51,7 +51,7 @@ void GcodeSuite::M5000() {
   planner.synchronize();
 
   LedFx ledfx;
-  ledfx.begin(LedFx::Pattern::Blink,500,LEDColor(0,40,255));
+  ledfx.begin(LedFx::Pattern::Blink,500,LEDColor(0,143,255),0);
 
   SERIAL_ECHO_MSG("Inserer fil");
 
@@ -68,7 +68,7 @@ void GcodeSuite::M5000() {
   ledfx.stop();
   SERIAL_ECHO_MSG("Fil detecte... mise en position");
 
-  leds.set_color(100, 255, 0, 255);
+  leds.set_color(50, 255, 0, 255);
 
   // ferme l'extudeur
 
@@ -103,5 +103,5 @@ void GcodeSuite::M5000() {
 
   SERIAL_ECHO_MSG("Fil en position");
 
-  leds.set_color(0, 255, 0, 255);
+  leds.set_color(50, 255, 0, 255);
 }

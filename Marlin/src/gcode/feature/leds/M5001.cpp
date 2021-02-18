@@ -49,7 +49,7 @@ void GcodeSuite::M5001() {
   }
 
   else if (progID == 2) {
-    leds.set_color(0, 0, 255, 255);
+    leds.set_color(0, 255, 0, 255);
     dwell(1000);
     leds.set_color(255, 0, 0, 255);
   }
@@ -65,7 +65,7 @@ void GcodeSuite::M5001() {
 
   else if (progID == 4) {
     LedFx ledfx;
-    ledfx.begin(LedFx::Pattern::Blink, 500, LEDColor(0, 40, 255));
+    ledfx.begin(LedFx::Pattern::Blink, 500, LEDColor(0, 143, 255,0));
     auto ms = millis();
     while (millis() - ms < 10000) {
       dwell(1);
@@ -76,7 +76,7 @@ void GcodeSuite::M5001() {
 
   else if (progID == 5) {
     LedFx ledfx;
-    ledfx.begin(LedFx::Pattern::FadeIn, 3000, LEDColor(0, 40, 255));
+    ledfx.begin(LedFx::Pattern::FadeIn, 3000, LEDColor(0, 143, 255));
     auto ms = millis();
     while (millis() - ms < 3000) {
       dwell(1);
@@ -87,9 +87,31 @@ void GcodeSuite::M5001() {
 
   else if (progID == 6) {
     LedFx ledfx;
-    ledfx.begin(LedFx::Pattern::FadeOut, 3000, LEDColor(0, 40, 255));
+    ledfx.begin(LedFx::Pattern::FadeOut, 3000, LEDColor(0, 143, 255));
     auto ms = millis();
     while (millis() - ms < 3000) {
+      dwell(1);
+      ledfx.update();
+    }
+    ledfx.stop();
+  }
+
+  else if (progID == 7) {
+    LedFx ledfx;
+    ledfx.begin(LedFx::Pattern::BlinkID, 300, LEDColor(0, 143, 255),1);
+    auto ms = millis();
+    while (millis() - ms < 3000) {
+      dwell(1);
+      ledfx.update();
+    }
+    ledfx.stop();
+  }
+
+  else if (progID == 8) {
+    LedFx ledfx;
+    ledfx.begin(LedFx::Pattern::FadeInBloc, 5000, LEDColor(0, 143, 255));
+    auto ms = millis();
+    while (millis() - ms < 5000) {
       dwell(1);
       ledfx.update();
     }
