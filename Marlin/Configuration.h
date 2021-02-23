@@ -417,7 +417,7 @@
  *   998 : Dummy Table that ALWAYS reads 25°C or the temperature defined below.
  *   999 : Dummy Table that ALWAYS reads 100°C or the temperature defined below.
  */
-#define TEMP_SENSOR_0 998
+#define TEMP_SENSOR_0 999
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -431,7 +431,7 @@
 
 // Dummy thermistor constant temperature readings, for use with 998 and 999
 #define DUMMY_THERMISTOR_998_VALUE 25
-#define DUMMY_THERMISTOR_999_VALUE 100
+#define DUMMY_THERMISTOR_999_VALUE 190
 
 // Resistor values when using a MAX31865 (sensor -5)
 // Sensor value is typically 100 (PT100) or 1000 (PT1000)
@@ -1089,7 +1089,7 @@
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
 #define INVERT_X_DIR true
-#define INVERT_Y_DIR true
+#define INVERT_Y_DIR false
 #define INVERT_Z_DIR false
 
 // @section extruder
@@ -1125,11 +1125,11 @@
 
 // The size of the print bed
 #define X_BED_SIZE 125
-#define Y_BED_SIZE 96
+#define Y_BED_SIZE 96.32
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
 #define X_MIN_POS -125
-#define Y_MIN_POS -96.32
+#define Y_MIN_POS -63
 #define Z_MIN_POS 0
 #define X_MAX_POS X_BED_SIZE
 #define Y_MAX_POS Y_BED_SIZE

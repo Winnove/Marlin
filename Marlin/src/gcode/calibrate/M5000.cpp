@@ -40,13 +40,14 @@
 
 void GcodeSuite::M5000() {
 
-  leds.set_color(255, 40, 40, 255);
+  //leds.set_color(255, 40, 40, 255);
 
   SERIAL_ECHO_MSG("Preparation machine");
 
+
   // met la machine en position pour ouvrir l'extrudeur
 
-  destination[X_AXIS] = 20;
+  destination[X_AXIS] = -120 ;
   prepare_internal_move_to_destination(); // set_current_to_destination
   planner.synchronize();
 
@@ -55,20 +56,19 @@ void GcodeSuite::M5000() {
 
   SERIAL_ECHO_MSG("Inserer fil");
 
+
   // lance la detection du fil en butée lors de l'insertion par l'utilisateur
 
-  while ((digitalRead(P1_28) == HIGH)) // using pin P1_28 for endstop
+  while ((READ(Y_MIN_PIN) == Y_MIN_ENDSTOP_INVERTING)) // using pin P1_28 for endstop
   {
     ledfx.update();
-    destination[E_AXIS] += 0.05;
-    prepare_internal_move_to_destination(); // set_current_to_destination
-    planner.synchronize();
-    reset_stepper_timeout();
+    dwell(100);
   }
+
   ledfx.stop();
   SERIAL_ECHO_MSG("Fil detecte... mise en position");
 
-  leds.set_color(50, 255, 0, 255);
+  leds.set_color(240, 40, 40, 255);
 
   // ferme l'extudeur
 
@@ -79,14 +79,17 @@ void GcodeSuite::M5000() {
   // recule le fil pour repalper précisement la butée sans perturbation de
   // l'utilisateur
 
-  destination[E_AXIS] -= 2;
+  destination[E_AXIS] -= 0.9;
   prepare_internal_move_to_destination(); // set_current_to_destination
   planner.synchronize();
   reset_stepper_timeout();
 
-  // repalpe le fil
+  dwell(1000);
 
-  while ((digitalRead(P1_28) == HIGH)) // using pin P1_28 for endstop
+  // repalpe le fil
+  endstops.enable(true);
+
+  while ((READ(Y_MIN_PIN) == Y_MIN_ENDSTOP_INVERTING)) // using pin P1_28 for endstop
   {
     destination[E_AXIS] += 0.05;
     prepare_internal_move_to_destination(); // set_current_to_destination
@@ -96,12 +99,18 @@ void GcodeSuite::M5000() {
 
   // met le fil a ras de la buse
 
-  destination[E_AXIS] -= 1.00;
+  destination[E_AXIS] -= 0.9;
   prepare_internal_move_to_destination(); // set_current_to_destination
   planner.synchronize();
   reset_stepper_timeout();
 
   SERIAL_ECHO_MSG("Fil en position");
 
-  leds.set_color(50, 255, 0, 255);
+  ledfx.begin(LedFx::Pattern::FadeOut, 5000, LEDColor(50, 255, 0));
+  auto ms = millis();
+  while (millis() - ms < 5000) {
+    dwell(1);
+    ledfx.update();
+  }
+  ledfx.stop();
 }
